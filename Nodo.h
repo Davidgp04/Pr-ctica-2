@@ -1,21 +1,25 @@
-#ifndef NODO_H_
-#define NODO_H_
-#include <string>
-#include <locale.h>
-using namespace std;
-class Nodo{
+#ifndef PARSER_H_
+#define PARSER_H_
+#include "Nodo.h"
+class Parser{
 private:
-	Nodo* izquierdo=nullptr;
-	Nodo* derecho=nullptr;
-	string data="";
+	Nodo** determinantesSingulares;
+	Nodo** verbosSingulares;
+	Nodo** verbosPlurales;
+	Nodo** sustantivosSingulares;
+	Nodo** sustantivosPlurales;
+	Nodo** determinantesPlurales;
+	Nodo** nombres;
+	Nodo** apellidos;
+	Nodo** conjunciones;
 public:
-	Nodo(string);
-	~Nodo();
-	Nodo** pasarDatos(string);
-	void añadirNodo(string);
-	string getData(){return this->data;}
-	void setData(string data){this->data=data;}
-	bool buscarElemento(string);
-	bool buscarDato(string,Nodo**);
+	Parser();
+	~Parser();
+string analizador(string);
+string analizadorSujeto(string,int);
 };
-#endif
+
+
+
+
+#endif /* PARSER_H_ */
