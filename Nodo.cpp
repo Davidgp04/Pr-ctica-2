@@ -1,3 +1,7 @@
+#include <iostream>
+#include "Nodo.h"
+#include <string>
+#include <fstream>
 #include <stdlib.h>
 using namespace std;
 string aMinuscula(string cadena) {
