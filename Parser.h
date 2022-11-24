@@ -3,6 +3,9 @@
 #include "Nodo.h"
 class Parser{
 private:
+	Nodo** determinantesSingulares;
+	Nodo** verbosSingulares;
+	Nodo** verbosPlurales;
 	Nodo** sustantivosSingulares;
 	Nodo** sustantivosPlurales;
 	Nodo** determinantesPlurales;
@@ -10,13 +13,10 @@ private:
 	Nodo** apellidos;
 	Nodo** conjunciones;
 public:
-	Nodo** determinantesSingulares;
-	Nodo** verbosSingulares;
-	Nodo** verbosPlurales;
 	Parser();
 	~Parser();
 string analizador(string);
-string analizadorSujeto(string,Nodo**,Nodo**,int);
+string analizadorSujeto(string,int);
 };
 
 
