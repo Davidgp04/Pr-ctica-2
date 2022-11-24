@@ -30,54 +30,70 @@ string Parser::analizador(string expresion){
 	return "Frase válida compuesta por verbo y sujeto omnisciente\n";
 
 	}else if(expresion.find(' ',inicio)==string::npos && not objeto->buscarDato(expresion,this->verbosSingulares) && not objeto->buscarDato(expresion,this->verbosPlurales)){
-		return "Expresión no válida\n";
+		return "Expresión no válida por no tener verbos\n";
 	}else{
 		expresion+=' ';
 		string palabra;
-		int contadorVerbos=0;
+		int contadorVerbos=0,contadorVerbosSingulares=0,contadorVerbosPlurales=0;
 		string verbo;
+		string anterior;
 		while(expresion.find(' ',inicio+1)!=string::npos){
 			int secundario=expresion.find(' ',inicio);
 			palabra=expresion.substr(inicio, secundario-inicio);
-			cout<<palabra<<endl;
-			if (objeto->buscarDato(palabra,this->verbosSingulares) || objeto->buscarDato(palabra,this->verbosPlurales)){
-				contadorVerbos++;
-				cout<<palabra<<endl;
-				verbo=palabra;
+			if (objeto->buscarDato(palabra,this->verbosSingulares)){
+				if (objeto->buscarDato(anterior,this->determinantesSingulares)){
+
+				}else{
+					contadorVerbos++;
+					contadorVerbosSingulares+=1;
+					verbo=palabra;
+					cout<<"verbo-->"<<verbo<<endl;
+				}
+			}else if (objeto->buscarDato(palabra,this->verbosPlurales)){
+				if (objeto->buscarDato(anterior,this->determinantesPlurales)){
+
+				}else{
+					contadorVerbos++;
+					contadorVerbosPlurales+=1;
+					verbo=palabra;
+					cout<<"verbo--> "<<verbo<<endl;
+				}
 			}
 			if (expresion.find(' ', inicio)!=string::npos && contadorVerbos<=1) {
 			inicio=secundario+1;
 			}else if (contadorVerbos>1){
-				return "Frase inválida";
+				return "Frase inválida por tener más de un verbo";
 			}else{
 				break;
 			}
+			anterior=palabra;
 		}
 		string sujeto;
 		if (contadorVerbos==0){
-			return "Frase no válida\n";
+			return "Frase no válida por no tener verbos\n";
 		}
-		if (objeto->buscarDato(verbo, this->verbosSingulares)){
-			cout<<expresion.substr(0,expresion.find(verbo, 0))<<endl;
-			sujeto=this->analizadorSujeto(expresion.substr(0,expresion.find(verbo, 0)),this->determinantesSingulares,this->sustantivosSingulares,1);
+		if (contadorVerbosSingulares>0){
+			sujeto=this->analizadorSujeto(expresion.substr(0,expresion.find(verbo, 0)),1);
 		}else{
-			cout<<expresion.substr(0,expresion.find(verbo, 0))<<endl;
-			sujeto=this->analizadorSujeto(expresion.substr(0,expresion.find(verbo, 0)),this->determinantesPlurales,this->sustantivosPlurales,2);
+			sujeto=this->analizadorSujeto(expresion.substr(0,expresion.find(verbo, 0)),2);
 		}
 		if (sujeto=="Frase inválida"){
-						return sujeto;
+						return "La frase no tiene una correcta estructura";
+			}else{
+				cout<<"Sujeto --> "<<expresion.substr(0,expresion.find(verbo, 0))<<endl;
 			}
 		string predicado;
-		if (expresion.substr(expresion.find(palabra,0)+palabra.length(), expresion.length()).length()==0){
+		if (expresion.substr(expresion.find(verbo,0)+verbo.length(), expresion.length()).length()==0){
 			predicado="";
 		}else{
-			predicado=" predicado";
+			cout<<"Predicado--> "<<expresion.substr(expresion.find(verbo,0)+verbo.length(), expresion.length())<<endl;
+			predicado="-predicado";
 		}
-	palabra=" verbo ";
-	return (sujeto+palabra+predicado);
+	palabra="-verbo-";
+	return ("Oración válida compuesta por: "+sujeto+palabra+predicado);
 	}
 }
-string Parser::analizadorSujeto(string sujeto,Nodo** determinantes,Nodo** sustantivos,int opcion){
+string Parser::analizadorSujeto(string sujeto,int opcion){
 	string informacion="Frase con ";
 	if (sujeto.length()==0){
 		informacion+="sujeto impersonal ";
@@ -89,10 +105,12 @@ string Parser::analizadorSujeto(string sujeto,Nodo** determinantes,Nodo** sustan
 		while(sujeto.find(' ', inicio)!=string::npos){
 		int secundario=sujeto.find(' ',inicio);
 		palabra=sujeto.substr(inicio, secundario-inicio);
-		if (palabra=="a"){
+		if (palabra=="a" || palabra=="que"){
 		return "Frase inválida";
 		}
-		if (objeto->buscarDato(palabra,this->nombres)){
+		if(objeto->buscarDato(palabra,this->conjunciones)){
+					contadorConjunciones++;
+		}else if (objeto->buscarDato(palabra,this->nombres)){
 			contadorNombres++;
 		}else if(objeto->buscarDato(palabra,this->apellidos)){
 			contadorApellidos++;
@@ -105,11 +123,9 @@ string Parser::analizadorSujeto(string sujeto,Nodo** determinantes,Nodo** sustan
 		}else if (objeto->buscarDato(palabra,this->determinantesPlurales)){
 			contadorDeterminantesPlurales++;
 		}
-		if (palabra.find(' ', inicio)!=string::npos) {
+		if (sujeto.find(' ', inicio)!=string::npos) {
 					inicio=secundario+1;
-					}else{
-						break;
-					}
+			}
 	}
 		if (opcion==1){
 			if(contadorConjunciones>0){
@@ -119,12 +135,14 @@ string Parser::analizadorSujeto(string sujeto,Nodo** determinantes,Nodo** sustan
 			}else if(contadorDeterminantesSingulares>contadorSujetosSingulares || contadorDeterminantesPlurales>contadorSujetosPlurales){
 				return "Frase inválida";
 			}else{
-				return " Sujeto ";
+				return " Sujeto-";
 		}
 		}else{
 			if ((contadorNombres>1 || contadorApellidos>1 || contadorSujetosSingulares>1) && contadorConjunciones<1){
+				cout<<"No hay suficientes conjunciones";
 				return "Frase inválida";
 			}else if (contadorDeterminantesSingulares>contadorSujetosSingulares || contadorDeterminantesPlurales>contadorSujetosPlurales){
+				cout<<"No hay suficientes sustantivos";
 				return "Frase inválida";
 			}else{
 				return "sujeto ";
