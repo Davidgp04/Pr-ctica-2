@@ -83,6 +83,3 @@ bool Nodo::buscarDato(string elemento,Nodo** lista){
 	elemento=aMinuscula(elemento);
 	return lista[int(elemento[0]-int('a'))]->buscarElemento(elemento);
 }
-
-
-
